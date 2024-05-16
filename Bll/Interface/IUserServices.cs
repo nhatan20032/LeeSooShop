@@ -4,7 +4,7 @@ using Data.ViewModels.User;
 
 namespace Bll.Interface
 {
-    public interface IUserServices : DbServices
+    public interface IUserServices
     {
         public bool Create(User user);
         public bool Update(User user);
