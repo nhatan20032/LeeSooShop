@@ -9,7 +9,7 @@ namespace Bll.Interface
         public bool Create(User user);
         public bool Update(UpdateUser user);
         public bool Delete(int id);
-        public DataTableResult GetAll(PagingModels paging);
+        public Task<DataTableResult> GetAll(PagingModels paging);
         public User GetById(int id);
         public bool Login(UserLogin user);
         public bool Logout();
