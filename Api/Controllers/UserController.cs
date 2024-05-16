@@ -20,5 +20,11 @@ namespace Api.Controllers
             if (user == null) { return NoContent(); }
             return Ok(_services.Create(user));
         }
+        [HttpPost("/User/Update")]
+        public ActionResult Update([FromBody] User user)
+        {
+            if (user == null) { return NoContent(); }
+            return Ok(_services.Update(user));
+        }
     }
 }
