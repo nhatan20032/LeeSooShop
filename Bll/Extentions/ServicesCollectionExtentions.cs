@@ -1,5 +1,5 @@
-﻿using Bll.Impliment;
-using Bll.Interface;
+﻿using Bll.Services.Impliment;
+using Bll.Services.Interface;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

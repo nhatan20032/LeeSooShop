@@ -1,12 +1,12 @@
 ﻿using Bll.Extentions;
-using Bll.Interface;
+using Bll.Services.Interface;
 using Data.Entities;
 using Data.Models;
 using Data.ViewModels.User;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using ServiceStack.OrmLite;
 
-namespace Bll.Impliment
+namespace Bll.Services.Impliment
 {
     public class UserServices : DbServices, IUserServices
     {

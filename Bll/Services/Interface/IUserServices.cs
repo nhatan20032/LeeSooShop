@@ -2,7 +2,7 @@
 using Data.Models;
 using Data.ViewModels.User;
 
-namespace Bll.Interface
+namespace Bll.Services.Interface
 {
     public interface IUserServices
     {
