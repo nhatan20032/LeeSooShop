@@ -167,15 +167,7 @@ namespace Bll.Services.Impliment
                         IssuerSigningKey = new SymmetricSecurityKey(key_bytes)
                     };
                     ClaimsPrincipal claimsPrincipal;
-                    try
-                    {
-                        claimsPrincipal = tokenHandler.ValidateToken(tokenString, tokenValidationParameters, out SecurityToken validatedToken);
-                        Console.WriteLine("Token validation successful.");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Token validation failed: " + ex.Message);
-                    }
+                    claimsPrincipal = tokenHandler.ValidateToken(tokenString, tokenValidationParameters, out SecurityToken validatedToken);
                     // Lưu user_id vào Session
                     _httpContextAccessor.HttpContext!.Session.SetInt32("user_id", user.id);
                     _httpContextAccessor.HttpContext.Session.SetString("token", tokenString);
