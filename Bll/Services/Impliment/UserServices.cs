@@ -3,7 +3,6 @@ using Bll.Services.Interface;
 using Data.Entities;
 using Data.Models;
 using Data.ViewModels.User;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using ServiceStack.OrmLite;
 
 namespace Bll.Services.Impliment
@@ -17,6 +16,7 @@ namespace Bll.Services.Impliment
         public bool Create(User user)
         {
             using var db = _connectionData.OpenDbConnection();
+            user.password = MD5Services.ComputeMd5Hash(user.password);
             return db.Insert(user, selectIdentity: true) > 0 ? true : false;
         }
         public bool Update(UpdateUser user)
@@ -28,7 +28,7 @@ namespace Bll.Services.Impliment
             update.family_name = user.family_name;
             update.phone = user.phone;
             update.gender = user.gender;
-            update.password = user.password;
+            update.password = user.password.Length == 32 ? update.password : MD5Services.ComputeMd5Hash(user.password).ToLower();
             update.status = user.status;
             db.Update(update);
             return true;
@@ -41,17 +41,7 @@ namespace Bll.Services.Impliment
             return db.DeleteById<User>(id) > 0 ? true : false;
         }
 
-        public bool Login(UserLogin user)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Logout()
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<DataTableResult> GetAll(PagingModels page)
+        public async Task<DataTableResult> List(PagingModels page)
         {
             using var db = _connectionData.OpenDbConnection();
             var query = db.From<User>();
@@ -77,6 +67,34 @@ namespace Bll.Services.Impliment
             using var db = _connectionData.OpenDbConnection();
             if (id <= 0) { return null!; }
             return db.SingleById<User>(id);
+        }
+        public bool Check_Login(UserLogin user)
+        {
+            using var db = _connectionData.OpenDbConnection();
+            var query = db.Single<User>(e => e.email == user.email && e.password == MD5Services.ComputeMd5Hash(user.password));
+            if (query == null) { return false; }
+            return true;
+        }
+
+        public bool Logout()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<User> GetAll(PagingModels page)
+        {
+            using var db = _connectionData.OpenDbConnection();
+            var query = db.From<User>();
+            query.OrderByDescending(x => x.id);
+            if (page.limit > 0) { query.Take(page.limit); }
+            if (page.offset > 0) { query.Skip(page.offset); }
+            var rows = db.Select(query).ToList();
+            return rows;
+        }
+
+        public User Valid_Login(string username, string password, out string tokenString)
+        {
+            throw new NotImplementedException();
         }
     }
 }

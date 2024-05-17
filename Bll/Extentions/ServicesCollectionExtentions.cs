@@ -9,7 +9,7 @@ namespace Bll.Extentions
     {
         public static IServiceCollection AddEventBus(this IServiceCollection services, IConfiguration configuration)
         {
-            
+
             #region ================== DI Services ==================           
             services.AddTransient<IUserServices, UserServices>();
             #endregion

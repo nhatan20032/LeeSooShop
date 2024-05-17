@@ -15,7 +15,28 @@ namespace Api.Controllers
         {
             _services = services;
         }
-
+        [HttpPost("/User/List")]
+        public async Task<ActionResult> List()
+        {
+            var draw = Request.Form["draw"];
+            var start = Request.Form["start"];
+            var length = Request.Form["length"];
+            string? search = Request.Form["search[value]"];
+            var page = new PagingModels
+            {
+                limit = int.Parse(length!),
+                offset = int.Parse(start!),
+                keyword = search,
+            };
+            var result = await _services.List(page);
+            return Ok(new
+            {
+                draw,
+                result.recordsTotal,
+                result.recordsFiltered,
+                result.data
+            });
+        }
         [HttpPost("/User/Create")]
         public ActionResult Create([FromBody] User user)
         {
@@ -34,27 +55,13 @@ namespace Api.Controllers
             if (id <= 0) { return NoContent(); }
             return Ok(_services.Delete(id));
         }
-        [HttpGet("/User/GetAll")]
-        public async Task<ActionResult> List()
+        [HttpGet]
+        [Route("/User/Get_All")]
+        public ActionResult GetAll(int offset = 0, int limit = 10, string search = "")
         {
-            var draw = Request.Form["draw"];
-            var start = Request.Form["start"];
-            var length = Request.Form["length"];
-            string? search = Request.Form["search[value]"];
-            var page = new PagingModels
-            {
-                limit = int.Parse(length!),
-                offset = int.Parse(start!),
-                keyword = search,
-            };
-            var result = await _services.GetAll(page);
-            return Ok(new
-            {
-                draw,
-                result.recordsTotal,
-                result.recordsFiltered,
-                result.data
-            });
+            PagingModels page = new() { limit = limit, offset = offset, keyword = search };
+            var data = _services.GetAll(page);
+            return Ok(data);
         }
         [HttpGet("/User/GetById/{id}")]
         public ActionResult GetById([FromRoute] int id)
