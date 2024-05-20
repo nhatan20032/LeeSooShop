@@ -12,6 +12,10 @@ namespace Bll.Extentions
 
             #region ================== DI Services ==================           
             services.AddTransient<IUserServices, UserServices>();
+            services.AddTransient<IBrandServices, BrandServices>();
+            services.AddTransient<IAgeServices, AgeServices>();
+            services.AddTransient<ICatalogServices, CatalogServices>();
+            services.AddTransient<IDiscountServices, DiscountServices>();
             #endregion
 
             return services;
