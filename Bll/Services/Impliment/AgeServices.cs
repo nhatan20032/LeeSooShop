@@ -2,7 +2,6 @@
 using Bll.Services.Interface;
 using Data.Entities;
 using Data.Models;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using ServiceStack.OrmLite;
 
 namespace Bll.Services.Impliment
@@ -24,7 +23,7 @@ namespace Bll.Services.Impliment
             using var db = _connectionData.OpenDbConnection();
             if (id <= 0) { return false; }
             return db.DeleteById<Age>(id) > 0 ? true : false;
-        }       
+        }
 
         public bool Update(Age age)
         {
