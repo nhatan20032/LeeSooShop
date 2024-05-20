@@ -47,6 +47,25 @@ namespace Api.Controllers
             if (user == null) { return NoContent(); }
             return Ok(_services.Register(user));
         }
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("/User/Login")]
+        public IActionResult Login([FromBody] UserLogin user)
+        {
+            if (!ModelState.IsValid) { return BadRequest("Lỗi dữ liệu, xin vui lòng kiểm tra"); }
+            var user_login = _services.Valid_Login(user.email, user.password, out string token);
+            if (user_login == null) { return BadRequest("Không tìm thấy người dùng"); }
+            return Ok(new { token, user = user_login });
+        }
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("/User/Logout")]
+        public IActionResult Logout()
+        {
+            var check_logout = _services.Logout();
+            if (!check_logout) { return BadRequest(); }
+            return Ok();
+        }
         [HttpPut("/User/Update")]
         public ActionResult Update([FromBody] UpdateUser user)
         {
@@ -76,17 +95,6 @@ namespace Api.Controllers
         {
             if (id <= 0) { return NoContent(); }
             return Ok(_services.GetById(id));
-        }
-
-        [AllowAnonymous]
-        [HttpPost]
-        [Route("/User/Login")]
-        public IActionResult Login([FromBody] UserLogin user)
-        {
-            if (!ModelState.IsValid) { return BadRequest("Lỗi dữ liệu, xin vui lòng kiểm tra"); }
-            var user_login = _services.Valid_Login(user.email, user.password, out string token);
-            if (user_login == null) { return BadRequest("Không tìm thấy người dùng"); }
-            return Ok(new { token, user = user_login });
         }
     }
 }

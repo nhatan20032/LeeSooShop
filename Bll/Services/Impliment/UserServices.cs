@@ -8,7 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using ServiceStack;
 using ServiceStack.OrmLite;
-using ServiceStack.Web;
 using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
