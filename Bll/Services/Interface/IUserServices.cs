@@ -6,7 +6,7 @@ namespace Bll.Services.Interface
 {
     public interface IUserServices
     {
-        public bool Create(User user);
+        public bool Register(User user);
         public bool Update(UpdateUser user);
         public bool Delete(int id);
         public List<User> GetAll(PagingModels page);

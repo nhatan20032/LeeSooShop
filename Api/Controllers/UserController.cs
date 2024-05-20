@@ -2,11 +2,13 @@
 using Data.Entities;
 using Data.Models;
 using Data.ViewModels.User;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin, User")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -15,6 +17,7 @@ namespace Api.Controllers
         {
             _services = services;
         }
+        [Authorize(Policy = "AdminPolicy")]
         [HttpPost("/User/List")]
         public async Task<ActionResult> List()
         {
@@ -37,11 +40,12 @@ namespace Api.Controllers
                 result.data
             });
         }
-        [HttpPost("/User/Create")]
-        public ActionResult Create([FromBody] User user)
+        [AllowAnonymous]
+        [HttpPost("/User/Register")]
+        public ActionResult Register([FromBody] User user)
         {
             if (user == null) { return NoContent(); }
-            return Ok(_services.Create(user));
+            return Ok(_services.Register(user));
         }
         [HttpPut("/User/Update")]
         public ActionResult Update([FromBody] UpdateUser user)
@@ -49,12 +53,15 @@ namespace Api.Controllers
             if (user == null) { return NoContent(); }
             return Ok(_services.Update(user));
         }
+
+        [Authorize(Policy = "AdminPolicy")]
         [HttpDelete("/User/Delete/{id}")]
         public ActionResult Delete([FromRoute] int id)
         {
             if (id <= 0) { return NoContent(); }
             return Ok(_services.Delete(id));
         }
+
         [HttpGet]
         [Route("/User/Get_All")]
         public ActionResult GetAll(int offset = 0, int limit = 10, string search = "")
@@ -63,11 +70,23 @@ namespace Api.Controllers
             var data = _services.GetAll(page);
             return Ok(data);
         }
+
         [HttpGet("/User/GetById/{id}")]
         public ActionResult GetById([FromRoute] int id)
         {
             if (id <= 0) { return NoContent(); }
             return Ok(_services.GetById(id));
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("/User/Login")]
+        public IActionResult Login([FromBody] UserLogin user)
+        {
+            if (!ModelState.IsValid) { return BadRequest("Lỗi dữ liệu, xin vui lòng kiểm tra"); }
+            var user_login = _services.Valid_Login(user.email, user.password, out string token);
+            if (user_login == null) { return BadRequest("Không tìm thấy người dùng"); }
+            return Ok(new { token, user = user_login });
         }
     }
 }

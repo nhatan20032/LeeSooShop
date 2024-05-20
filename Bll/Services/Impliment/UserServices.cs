@@ -6,6 +6,7 @@ using Data.ViewModels.User;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using ServiceStack;
 using ServiceStack.OrmLite;
 using System.Data;
 using System.IdentityModel.Tokens.Jwt;
@@ -25,11 +26,21 @@ namespace Bll.Services.Impliment
         }
         public string GetAppSetting(string key) => _app_settings.GetSection(key).Value!;
 
-        public bool Create(User user)
+        public bool Register(User user)
         {
             using var db = _connectionData.OpenDbConnection();
             user.password = MD5Services.ComputeMd5Hash(user.password);
-            return db.Insert(user, selectIdentity: true) > 0 ? true : false;
+            user.id = (int)db.Insert(user, selectIdentity: true);
+            if (user.id > 0)
+            {
+                var user_role = new User_Role
+                {
+                    role_id = 2,
+                    user_id = user.id
+                };
+                db.Insert(user_role, selectIdentity: true);
+            }
+            return true;
         }
         public bool Update(UpdateUser user)
         {
@@ -88,11 +99,6 @@ namespace Bll.Services.Impliment
             return query;
         }
 
-        public bool Logout()
-        {
-            throw new NotImplementedException();
-        }
-
         public List<User> GetAll(PagingModels page)
         {
             using var db = _connectionData.OpenDbConnection();
@@ -128,11 +134,11 @@ namespace Bll.Services.Impliment
                 var roles = GetRolesUser(user.id);
                 if (roles != null && roles.Count > 0)
                 {
-                    List<Claim> claims = new()
-                    {
+                    List<Claim> claims =
+                    [
                         new(ClaimTypes.NameIdentifier, user.id.ToString()),
                         new(ClaimTypes.Name, user.email)
-                    };
+                    ];
                     foreach (var role in roles)
                     {
                         claims.Add(new Claim(ClaimTypes.Role, role));
@@ -171,10 +177,16 @@ namespace Bll.Services.Impliment
                     // Lưu user_id vào Session
                     _httpContextAccessor.HttpContext!.Session.SetInt32("user_id", user.id);
                     _httpContextAccessor.HttpContext.Session.SetString("token", tokenString);
-                    _httpContextAccessor.HttpContext.Session.SetString("role_title", roles[0]);
+                    _httpContextAccessor.HttpContext.Session.SetString("role_title", roles[0]);                    
                 }
             }
             return user!;
+        }
+        public bool Logout()
+        {
+            _httpContextAccessor.HttpContext!.Session.Clear();
+            if (_httpContextAccessor.HttpContext!.Session.Keys.Count() > 0) { return false; }
+            return true;
         }
     }
 }
