@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using ServiceStack;
 using ServiceStack.OrmLite;
+using ServiceStack.Web;
 using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -177,7 +178,14 @@ namespace Bll.Services.Impliment
                     // Lưu user_id vào Session
                     _httpContextAccessor.HttpContext!.Session.SetInt32("user_id", user.id);
                     _httpContextAccessor.HttpContext.Session.SetString("token", tokenString);
-                    _httpContextAccessor.HttpContext.Session.SetString("role_title", roles[0]);                    
+                    _httpContextAccessor.HttpContext.Session.SetString("role_title", roles[0]);
+                    _httpContextAccessor.HttpContext!.Response.Cookies.Append("token", tokenString, new CookieOptions
+                    {
+                        HttpOnly = false,
+                        Secure = false, // Chỉ bật Secure trong môi trường production
+                        SameSite = SameSiteMode.Strict,
+                        Expires = !string.IsNullOrEmpty(GetAppSetting("JWT:Expires")) ? DateTime.Now.AddMinutes(Convert.ToInt32(GetAppSetting("JWT:Expires")!)) : DateTime.Now.AddMinutes(60)
+                    });
                 }
             }
             return user!;
