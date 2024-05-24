@@ -23,7 +23,7 @@ namespace Bll.Services.Impliment
         {
             throw new NotImplementedException();
         }
-        public bool Create(CreateProductModels product)
+        public async Task<bool> Create(CreateProductModels product)
         {
             using var db = _connectionData.OpenDbConnection();
             var brandName = db.Single<Brand>(x => x.id == product.brand_id).title;
@@ -44,15 +44,15 @@ namespace Bll.Services.Impliment
                 created_at = product.created_at,
                 status = product.status ?? "active"
             };
-            var product_id = (int)db.Insert(obj_product, selectIdentity: true);
-            db.Insert(new Product_Catalog { product_id = product_id, catalog_id = product.catalog_id }, selectIdentity: true);
-            db.Insert(new Product_Age { product_id = product_id, age_id = product.age_id }, selectIdentity: true);
-            db.Insert(new Product_Brand { product_id = product_id, brand_id = product.brand_id }, selectIdentity: true);
-            db.Insert(new Product_Gender { product_id = product_id, gender_id = product.gender_id }, selectIdentity: true);
-            if (product.discount_id > 0) { db.Insert(new Product_Discount { product_id = product_id, discount_id = product.discount_id }, selectIdentity: true); }
+            var product_id = (int)await db.InsertAsync(obj_product, selectIdentity: true);
+            await db.InsertAsync(new Product_Catalog { product_id = product_id, catalog_id = product.catalog_id }, selectIdentity: true);
+            await db.InsertAsync(new Product_Age { product_id = product_id, age_id = product.age_id }, selectIdentity: true);
+            await db.InsertAsync(new Product_Brand { product_id = product_id, brand_id = product.brand_id }, selectIdentity: true);
+            await db.InsertAsync(new Product_Gender { product_id = product_id, gender_id = product.gender_id }, selectIdentity: true);
+            if (product.discount_id > 0) { await db.InsertAsync(new Product_Discount { product_id = product_id, discount_id = product.discount_id }, selectIdentity: true); }
             return true;
         }
-        public bool Update(Product product)
+        public async Task<bool> Update(Product product)
         {
             using var db = _connectionData.OpenDbConnection();
             var update = db.SingleById<Product>(product.id);
@@ -71,30 +71,54 @@ namespace Bll.Services.Impliment
             update.age = product.age;
             update.modified_at = DateTime.Now;
             update.status = product.status;
-            db.Update(update);
+            await db.UpdateAsync(update);
             return true;
         }
 
-        public bool Delete(int id)
+        public async Task<bool> Delete(int id)
         {
             using var db = _connectionData.OpenDbConnection();
             if (id <= 0) { return false; }
-            return db.DeleteById<User>(id) > 0 ? true : false;
+            return await db.DeleteByIdAsync<User>(id) > 0 ? true : false;
         }
 
-        public List<Product> GetAll(PagingModels page)
+        public async Task<List<Product>> GetAll(PagingModels page)
         {
-            throw new NotImplementedException();
+            using var db = _connectionData.OpenDbConnection();
+            var query = db.From<Product>();
+            query.OrderByDescending(x => x.id);
+            if (page.limit > 0) { query.Take(page.limit); }
+            if (page.offset > 0) { query.Skip(page.offset); }
+            var rows = await db.SelectAsync(query);
+            return rows;
         }
 
-        public Product GetById(int id)
+        public async Task<Product> GetById(int id)
         {
-            throw new NotImplementedException();
+            using var db = _connectionData.OpenDbConnection();
+            if (id <= 0) { return null!; }
+            return await db.SingleByIdAsync<Product>(id);
         }
 
-        public Task<DataTableResult> List(PagingModels page)
+        public async Task<DataTableResult> List(PagingModels page)
         {
-            throw new NotImplementedException();
+            using var db = _connectionData.OpenDbConnection();
+            var query = db.From<Product>();
+            var predicate = PredicateBuilder.True<Product>();
+            if (!string.IsNullOrEmpty(page.keyword))
+            {
+                predicate = predicate.And(e => e.title.ToLower().Contains(page.keyword.ToLower()) || e.age.ToLower().Contains(page.keyword.ToLower()) || e.gender.Contains(page.keyword));
+            }
+            var totalRecords = await db.CountAsync(predicate);
+            if (page.limit > 0) { query.Take(page.limit); }
+            if (page.offset > 0) { query.Skip(page.offset); }
+            var data = await db.SelectAsync(query);
+            return new DataTableResult
+            {
+                recordsTotal = (int)totalRecords,
+                recordsFiltered = (int)totalRecords,
+                data = data
+            };
         }
     }
 }
