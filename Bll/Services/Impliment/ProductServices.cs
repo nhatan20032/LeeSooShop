@@ -14,12 +14,12 @@ namespace Bll.Services.Impliment
 
         }
 
-        public bool ExcelImport(string filePath)
+        public Task<bool> ExcelImport(string filePath)
         {
             throw new NotImplementedException();
         }
 
-        public bool UploadImage(string filePath)
+        public Task<bool> UploadImage(string filePath)
         {
             throw new NotImplementedException();
         }

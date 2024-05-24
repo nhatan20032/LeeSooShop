@@ -6,13 +6,13 @@ namespace Bll.Services.Interface
 {
     public interface IProductServices
     {
-        public bool Create(CreateProductModels product);
-        public bool Update(Product product);
-        public bool Delete(int id);
-        public bool ExcelImport(string filePath);
-        public bool UploadImage(string filePath);
-        public List<Product> GetAll(PagingModels page);
+        public Task<bool> Create(CreateProductModels product);
+        public Task<bool> Update(Product product);
+        public Task<bool> Delete(int id);
+        public Task<bool> ExcelImport(string filePath);
+        public Task<bool> UploadImage(string filePath);
+        public Task<List<Product>> GetAll(PagingModels page);
         public Task<DataTableResult> List(PagingModels page);
-        public Product GetById(int id);
+        public Task<Product> GetById(int id);
     }
 }
