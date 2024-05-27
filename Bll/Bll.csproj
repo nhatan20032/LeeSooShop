@@ -11,6 +11,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <PackageReference Include="EPPlus" Version="7.1.2" />
 	  <PackageReference Include="ServiceStack.OrmLite.Core" Version="8.2.2" />
 	  <PackageReference Include="ServiceStack.OrmLite.MySql.Core" Version="8.2.2" />
 	  <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.5.2" />

@@ -7,6 +7,7 @@ using Data.ViewModels.Product;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using OfficeOpenXml;
 using ServiceStack.OrmLite;
 
 namespace Bll.Services.Impliment
@@ -22,9 +23,57 @@ namespace Bll.Services.Impliment
             _app_settings = appSettings;
         }
         public string GetAppSetting(string key) => _app_settings.GetSection(key).Value!;
-        public Task<bool> ExcelImport(string filePath)
+        public async Task<bool> ExcelImport(IFormFile file)
         {
-            throw new NotImplementedException();
+            if (file == null || file.Length == 0) { return false; }
+
+            var products = new List<Product>();
+            var errorRows = new List<int>();
+
+            using (var stream = new MemoryStream())
+            {
+                await file.CopyToAsync(stream);
+                using var package = new ExcelPackage(stream);
+                ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                int rowCount = worksheet.Dimension.Rows;
+
+                for (int row = 2; row <= rowCount; row++)
+                {
+                    try
+                    {
+                        var product = new Product
+                        {
+                            code = worksheet.Cells[row, 1].Text,
+                            title = worksheet.Cells[row, 2].Text,
+                            description = worksheet.Cells[row, 3].Text,
+                            price = float.Parse(worksheet.Cells[row, 4].Text),
+                            amount = int.Parse(worksheet.Cells[row, 5].Text),
+                            image_1 = worksheet.Cells[row, 6].Text,
+                            image_2 = worksheet.Cells[row, 7].Text,
+                            image_3 = worksheet.Cells[row, 8].Text,
+                            image_4 = worksheet.Cells[row, 9].Text,
+                            source = worksheet.Cells[row, 10].Text,
+                            gender = worksheet.Cells[row, 11].Text,
+                            age = worksheet.Cells[row, 12].Text,
+                        };
+                        products.Add(product);
+                    }
+                    catch (Exception)
+                    {
+                        errorRows.Add(row);
+                    }
+                }
+                try
+                {
+                    using var db = _connectionData.OpenDbConnection();
+                    await db.SaveAllAsync(products);
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
         }
         public async Task<ActionResult> UploadFile(IFormFile file)
         {

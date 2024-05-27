@@ -18,8 +18,8 @@ namespace Data.Entities
         public required string source { get; set; }
         public required string gender { get; set; }
         public required string age { get; set; }
-        public required DateTime created_at { get; set; } = DateTime.Now;
+        public DateTime created_at { get; set; } = DateTime.Now;
         public DateTime? modified_at { get; set; } = null;
-        public required string status { get; set; } = "active";
+        public string status { get; set; } = "active";
     }
 }

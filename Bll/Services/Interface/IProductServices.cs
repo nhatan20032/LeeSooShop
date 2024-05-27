@@ -11,7 +11,7 @@ namespace Bll.Services.Interface
         public Task<bool> Create(CreateProductModels product);
         public Task<bool> Update(Product product);
         public Task<bool> Delete(int id);
-        public Task<bool> ExcelImport(string filePath);
+        public Task<bool> ExcelImport(IFormFile file);
         public Task<ActionResult> UploadFile(IFormFile file);
         public Task<List<Product>> GetAll(PagingModels page);
         public Task<DataTableResult> List(PagingModels page);
