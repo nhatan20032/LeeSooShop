@@ -1,27 +1,49 @@
 ﻿using Bll.Extentions;
+using Bll.Extentions.Ultilities;
 using Bll.Services.Interface;
 using Data.Entities;
 using Data.Models;
 using Data.ViewModels.Product;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using ServiceStack.OrmLite;
 
 namespace Bll.Services.Impliment
 {
     public class ProductServices : DbServices, IProductServices
     {
-        public ProductServices()
+        private readonly IConfiguration _app_settings;
+        protected readonly string _path_assets;
+        public ProductServices(IConfiguration appSettings)
         {
-
+            string default_path_assets = "C:\\data";
+            _path_assets = _app_settings!["PathAssets"] ?? default_path_assets;
+            _app_settings = appSettings;
         }
-
+        public string GetAppSetting(string key) => _app_settings.GetSection(key).Value!;
         public Task<bool> ExcelImport(string filePath)
         {
             throw new NotImplementedException();
         }
-
-        public Task<bool> UploadImage(string filePath)
+        public async Task<ActionResult> UploadFile(IFormFile file)
         {
-            throw new NotImplementedException();
+            if (file == null || file.Length == 0)
+                return new BadRequestObjectResult("Chưa nhận được dữ liệu của file");
+
+            var allowedTypes = new[] { "image/jpeg", "image/png", "video/mp4", "video/mpeg" };
+            if (!allowedTypes.Contains(file.ContentType))
+                return new BadRequestObjectResult("Sai định dạng file");
+
+            string url = _app_settings["Url"]!;
+            string fileName = DateTime.Now.ToString("yyyyMMdd_HHmmss_") + StringHelpers.RemoveVietnameseChar(file.FileName, true);
+            string urlName = url + fileName;
+            var fullPath = Path.Combine(_path_assets, fileName);
+
+            using (var stream = new FileStream(fullPath, FileMode.Create))
+                await file.CopyToAsync(stream);
+
+            return new OkObjectResult(new { file = fullPath, url = urlName });
         }
         public async Task<bool> Create(CreateProductModels product)
         {
@@ -120,5 +142,6 @@ namespace Bll.Services.Impliment
                 data = data
             };
         }
+
     }
 }
