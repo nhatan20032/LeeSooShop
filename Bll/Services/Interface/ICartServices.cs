@@ -6,6 +6,7 @@ namespace Bll.Services.Interface
 {
     public interface ICartServices
     {
+        public Task<DataTableResult> List(PagingModels page);
         public Task<bool> CheckProductInStored(int quantity);
         public Task<List<v_Cart>> GetAllProductInUserCart(PagingModels page);
         public Task<Product_Cart> AddProductIntoUserCart(ProductIntoUserCart user_c);

@@ -64,5 +64,25 @@ namespace Bll.Services.Impliment
             await db.DeleteAsync(query);
             return true;
         }
+        public async Task<DataTableResult> List(PagingModels page)
+        {
+            using var db = _connectionData.OpenDbConnection();
+            var query = db.From<v_Cart>();
+            var predicate = PredicateBuilder.True<v_Cart>();
+            if (!string.IsNullOrEmpty(page.keyword))
+            {
+                predicate = predicate.And(e => e.title!.ToLower().Contains(page.keyword.ToLower()));
+            }
+            var totalRecords = await db.CountAsync(predicate);
+            if (page.limit > 0) { query.Take(page.limit); }
+            if (page.offset > 0) { query.Skip(page.offset); }
+            var data = await db.SelectAsync(query);
+            return new DataTableResult
+            {
+                recordsTotal = (int)totalRecords,
+                recordsFiltered = (int)totalRecords,
+                data = data
+            };
+        }
     }
 }
