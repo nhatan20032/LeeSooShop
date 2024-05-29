@@ -7,6 +7,7 @@ namespace Data.Entities
     {
         public int id { get; set; }
         public int product_id { get; set; }
+        public int quantity { get; set; }
         public int cart_id { get; set; }
     }
 }
