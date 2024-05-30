@@ -12,44 +12,44 @@ namespace Bll.Services.Impliment
         {            
         }
 
-        public bool Create(Gender gender)
+        public async Task<bool> Create(Gender gender)
         {
             using var db = _connectionData.OpenDbConnection();
-            return db.Insert(gender, selectIdentity: true) > 0 ? true : false;
+            return await db.InsertAsync(gender, selectIdentity: true) > 0 ? true : false;
         }
 
-        public bool Delete(int id)
+        public async Task<bool> Delete(int id)
         {
             using var db = _connectionData.OpenDbConnection();
             if (id <= 0) { return false; }
-            return db.DeleteById<Age>(id) > 0 ? true : false;
+            return await db.DeleteByIdAsync<Age>(id) > 0 ? true : false;
         }
 
-        public bool Update(Gender gender)
+        public async Task<bool> Update(Gender gender)
         {
             using var db = _connectionData.OpenDbConnection();
-            var update = db.SingleById<Gender>(gender.id);
+            var update = await db.SingleByIdAsync<Gender>(gender.id);
             if (update == null) { return false; }
-            db.Update(gender);
+            await db.UpdateAsync(gender);
             return true;
         }
 
-        public List<Gender> GetAll(PagingModels page)
+        public async Task<List<Gender>> GetAll(PagingModels page)
         {
             using var db = _connectionData.OpenDbConnection();
             var query = db.From<Gender>();
             query.OrderByDescending(x => x.id);
             if (page.limit > 0) { query.Take(page.limit); }
             if (page.offset > 0) { query.Skip(page.offset); }
-            var rows = db.Select(query).ToList();
+            var rows = await db.SelectAsync(query);
             return rows;
         }
 
-        public Gender GetById(int id)
+        public async Task<Gender> GetById(int id)
         {
             using var db = _connectionData.OpenDbConnection();
             if (id <= 0) { return null!; }
-            return db.SingleById<Gender>(id);
+            return await db.SingleByIdAsync<Gender>(id);
         }
 
         public async Task<DataTableResult> List(PagingModels page)

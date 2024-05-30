@@ -8,44 +8,44 @@ namespace Bll.Services.Impliment
 {
     public class CatalogServices : DbServices, ICatalogServices
     {
-        public bool Create(Catalog catalog)
+        public async Task<bool> Create(Catalog catalog)
         {
             using var db = _connectionData.OpenDbConnection();
-            return db.Insert(catalog, selectIdentity: true) > 0 ? true : false;
+            return await db.InsertAsync(catalog, selectIdentity: true) > 0 ? true : false;
         }
 
-        public bool Delete(int id)
+        public async Task<bool> Delete(int id)
         {
             using var db = _connectionData.OpenDbConnection();
             if (id <= 0) { return false; }
-            return db.DeleteById<Catalog>(id) > 0 ? true : false;
+            return await db.DeleteByIdAsync<Catalog>(id) > 0 ? true : false;
         }     
 
-        public bool Update(Catalog catalog)
+        public async Task<bool> Update(Catalog catalog)
         {
             using var db = _connectionData.OpenDbConnection();
-            var update = db.SingleById<Catalog>(catalog.id);
+            var update = await db.SingleByIdAsync<Catalog>(catalog.id);
             if (update == null) { return false; }
-            db.Update(catalog);
+            await db.UpdateAsync(catalog);
             return true;
         }
 
-        public List<Catalog> GetAll(PagingModels page)
+        public async Task<List<Catalog>> GetAll(PagingModels page)
         {
             using var db = _connectionData.OpenDbConnection();
             var query = db.From<Catalog>();
             query.OrderByDescending(x => x.id);
             if (page.limit > 0) { query.Take(page.limit); }
             if (page.offset > 0) { query.Skip(page.offset); }
-            var rows = db.Select(query).ToList();
+            var rows = await db.SelectAsync(query);
             return rows;
         }
 
-        public Catalog GetById(int id)
+        public async Task<Catalog> GetById(int id)
         {
             using var db = _connectionData.OpenDbConnection();
             if (id <= 0) { return null!; }
-            return db.SingleById<Catalog>(id);
+            return await db.SingleByIdAsync<Catalog>(id);
         }
 
         public async Task<DataTableResult> List(PagingModels page)

@@ -12,43 +12,43 @@ namespace Bll.Services.Impliment
         {
         }
 
-        public bool Create(Brand brand)
+        public async Task<bool> Create(Brand brand)
         {
             using var db = _connectionData.OpenDbConnection();
-            return db.Insert(brand, selectIdentity: true) > 0 ? true : false;
+            return await db.InsertAsync(brand, selectIdentity: true) > 0 ? true : false;
         }
 
-        public bool Delete(int id)
+        public async Task<bool> Delete(int id)
         {
             using var db = _connectionData.OpenDbConnection();
             if (id <= 0) { return false; }
-            return db.DeleteById<Age>(id) > 0 ? true : false;
+            return await db.DeleteByIdAsync<Age>(id) > 0 ? true : false;
         }
 
-        public bool Update(Brand brand)
+        public async Task<bool> Update(Brand brand)
         {
             using var db = _connectionData.OpenDbConnection();
-            var update = db.SingleById<Brand>(brand.id);
+            var update = await db.SingleByIdAsync<Brand>(brand.id);
             if (update == null) { return false; }
-            db.Update(brand);
+            await db.UpdateAsync(brand);
             return true;
         }
-        public List<Brand> GetAll(PagingModels page)
+        public Task<List<Brand>> GetAll(PagingModels page)
         {
             using var db = _connectionData.OpenDbConnection();
             var query = db.From<Brand>();
             query.OrderByDescending(x => x.id);
             if (page.limit > 0) { query.Take(page.limit); }
             if (page.offset > 0) { query.Skip(page.offset); }
-            var rows = db.Select(query).ToList();
+            var rows = db.SelectAsync(query);
             return rows;
         }
 
-        public Brand GetById(int id)
+        public async Task<Brand> GetById(int id)
         {
             using var db = _connectionData.OpenDbConnection();
             if (id <= 0) { return null!; }
-            return db.SingleById<Brand>(id);
+            return await db.SingleByIdAsync<Brand>(id);
         }
 
         public async Task<DataTableResult> List(PagingModels page)

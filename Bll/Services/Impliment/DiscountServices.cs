@@ -9,44 +9,44 @@ namespace Bll.Services.Impliment
 {
     public class DiscountServices : DbServices, IDiscountServices
     {
-        public bool Create(Discount discount)
+        public async Task<bool> Create(Discount discount)
         {
             using var db = _connectionData.OpenDbConnection();
-            return db.Insert(discount, selectIdentity: true) > 0 ? true : false;
+            return await db.InsertAsync(discount, selectIdentity: true) > 0 ? true : false;
         }
 
-        public bool Delete(int id)
+        public async Task<bool> Delete(int id)
         {
             using var db = _connectionData.OpenDbConnection();
             if (id <= 0) { return false; }
-            return db.DeleteById<Discount>(id) > 0 ? true : false;
+            return await db.DeleteByIdAsync<Discount>(id) > 0 ? true : false;
         }
 
-        public bool Update(Discount discount)
+        public async Task<bool> Update(Discount discount)
         {
             using var db = _connectionData.OpenDbConnection();
-            var update = db.SingleById<Discount>(discount.id);
+            var update = await db.SingleByIdAsync<Discount>(discount.id);
             if (update == null) { return false; }
-            db.Update(discount);
+            await db.UpdateAsync(discount);
             return true;
         }
 
-        public List<Discount> GetAll(PagingModels page)
+        public async Task<List<Discount>> GetAll(PagingModels page)
         {
             using var db = _connectionData.OpenDbConnection();
             var query = db.From<Discount>();
             query.OrderByDescending(x => x.id);
             if (page.limit > 0) { query.Take(page.limit); }
             if (page.offset > 0) { query.Skip(page.offset); }
-            var rows = db.Select(query).ToList();
+            var rows = await db.SelectAsync(query);
             return rows;
         }
 
-        public Discount GetById(int id)
+        public async Task<Discount> GetById(int id)
         {
             using var db = _connectionData.OpenDbConnection();
             if (id <= 0) { return null!; }
-            return db.SingleById<Discount>(id);
+            return await db.SingleByIdAsync<Discount>(id);
         }
 
         public async Task<DataTableResult> List(PagingModels page)
