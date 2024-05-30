@@ -19,7 +19,7 @@ namespace Bll.Services.Impliment
             using var db = _connectionData.OpenDbConnection();
             if (id <= 0) { return false; }
             return await db.DeleteByIdAsync<Catalog>(id) > 0 ? true : false;
-        }     
+        }
 
         public async Task<bool> Update(Catalog catalog)
         {

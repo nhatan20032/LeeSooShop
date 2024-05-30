@@ -2,7 +2,6 @@
 using Bll.Services.Interface;
 using Data.Entities;
 using Data.Models;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using ServiceStack.OrmLite;
 
 namespace Bll.Services.Impliment

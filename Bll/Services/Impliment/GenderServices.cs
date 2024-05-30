@@ -9,7 +9,7 @@ namespace Bll.Services.Impliment
     public class GenderServices : DbServices, IGenderServices
     {
         public GenderServices()
-        {            
+        {
         }
 
         public async Task<bool> Create(Gender gender)

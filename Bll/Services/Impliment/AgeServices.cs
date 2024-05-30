@@ -25,7 +25,7 @@ namespace Bll.Services.Impliment
             return await db.DeleteByIdAsync<Age>(id) > 0 ? true : false;
         }
 
-        public async Task<bool>Update(Age age)
+        public async Task<bool> Update(Age age)
         {
             using var db = _connectionData.OpenDbConnection();
             var update = await db.SingleByIdAsync<Age>(age.id);

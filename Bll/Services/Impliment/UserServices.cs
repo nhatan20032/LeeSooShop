@@ -130,7 +130,7 @@ namespace Bll.Services.Impliment
             var user = Check_Login(username, password);
             if (user != null)
             {
-                var roles =  GetRolesUser(user.id);
+                var roles = GetRolesUser(user.id);
                 if (roles != null && roles.Count > 0)
                 {
                     List<Claim> claims =

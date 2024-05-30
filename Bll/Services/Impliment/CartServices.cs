@@ -50,7 +50,7 @@ namespace Bll.Services.Impliment
         {
             using var db = _connectionData.OpenDbConnection();
             bool exists = await db.ExistsAsync<Product_Cart>(uc => product_ids.Contains(uc.product_id) && uc.cart_id == user_id);
-            if(!exists) { return false; }
+            if (!exists) { return false; }
             await db.DeleteAsync<Product_Cart>(uc => product_ids.Contains(uc.product_id) && uc.cart_id == user_id);
             return true;
         }
