@@ -1,12 +1,13 @@
 ﻿using Bll.Services.Interface;
 using Data.Entities;
 using Data.Models;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin")]
     [ApiController]
     public class CatalogController : ControllerBase
     {
