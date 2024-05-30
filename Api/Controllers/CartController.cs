@@ -1,11 +1,13 @@
 ﻿using Bll.Services.Interface;
 using Data.Models;
 using Data.ViewModels.Cart;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = "User")]
     [ApiController]
     public class CartController : ControllerBase
     {
