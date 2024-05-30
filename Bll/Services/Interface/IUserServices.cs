@@ -6,14 +6,14 @@ namespace Bll.Services.Interface
 {
     public interface IUserServices
     {
-        public bool Register(User user);
-        public bool Update(UpdateUser user);
-        public bool Delete(int id);
-        public List<User> GetAll(PagingModels page);
+        public Task<bool> Register(User user);
+        public Task<bool> Update(UpdateUser user);
+        public Task<bool> Delete(int id);
+        public Task<List<User>> GetAll(PagingModels page);
         public Task<DataTableResult> List(PagingModels page);
-        public User GetById(int id);
-        public User Check_Login(string email, string password);
-        public User Valid_Login(string username, string password, out string tokenString);
+        public Task<User> GetById(int id);
+        public Task<User> Check_Login(string email, string password);
+        public Task<(User user, string tokenString)> Valid_Login(string username, string password);
         public bool Logout();
     }
 }
