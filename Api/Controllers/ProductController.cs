@@ -2,6 +2,7 @@
 using Data.Entities;
 using Data.Models;
 using Data.ViewModels.Product;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -16,6 +17,7 @@ namespace Api.Controllers
             _productServices = productServices;
         }
         [HttpPost("/Product/List")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> List()
         {
             var draw = Request.Form["draw"];
@@ -38,12 +40,14 @@ namespace Api.Controllers
             });
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [Route("/Product/Upload_File")]
         public async Task<ActionResult> UploadFile(IFormFile file)
         {
             return await _productServices.UploadFile(file);
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [Route("/Product/Import_Excel")]
         public async Task<IActionResult> ExcelImport(IFormFile file)
         {
@@ -52,6 +56,7 @@ namespace Api.Controllers
             return result ? Ok("Thêm sản phẩm từ File Excel thành công") : StatusCode(500, "Đã xảy ra lỗi khi thêm sản phẩm từ Excel");
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [Route("/Product/Create")]
         public async Task<ActionResult> Create([FromBody] CreateProductModels models)
         {
@@ -59,6 +64,7 @@ namespace Api.Controllers
             return Ok(await _productServices.Create(models));
         }
         [HttpPut]
+        [Authorize(Roles = "Admin")]
         [Route("/Product/Update")]
         public async Task<ActionResult> Update([FromBody] Product product)
         {
@@ -66,6 +72,7 @@ namespace Api.Controllers
             return Ok(await _productServices.Update(product));
         }
         [HttpDelete]
+        [Authorize(Roles = "Admin")]
         [Route("/Product/Delete")]
         public async Task<ActionResult> Delete([FromRoute] int id)
         {
