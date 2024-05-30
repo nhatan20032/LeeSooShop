@@ -16,6 +16,9 @@ namespace Bll.Extentions
             services.AddTransient<IAgeServices, AgeServices>();
             services.AddTransient<ICatalogServices, CatalogServices>();
             services.AddTransient<IDiscountServices, DiscountServices>();
+            services.AddTransient<IProductServices, ProductServices>();
+            services.AddTransient<IGenderServices, GenderServices>();
+            services.AddTransient<ICartServices, CartServices>();
             #endregion
 
             return services;

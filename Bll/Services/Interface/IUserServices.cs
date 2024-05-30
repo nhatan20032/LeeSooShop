@@ -12,8 +12,8 @@ namespace Bll.Services.Interface
         public Task<List<User>> GetAll(PagingModels page);
         public Task<DataTableResult> List(PagingModels page);
         public Task<User> GetById(int id);
-        public Task<User> Check_Login(string email, string password);
-        public Task<(User user, string tokenString)> Valid_Login(string username, string password);
+        public User Check_Login(string email, string password);
+        public User Valid_Login(string username, string password, out string tokenString);
         public bool Logout();
     }
 }

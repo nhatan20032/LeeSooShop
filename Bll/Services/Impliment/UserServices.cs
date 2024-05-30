@@ -30,7 +30,7 @@ namespace Bll.Services.Impliment
         {
             using var db = _connectionData.OpenDbConnection();
             user.password = MD5Services.ComputeMd5Hash(user.password);
-            user.id =  (int)await db.InsertAsync(user, selectIdentity: true);
+            user.id = (int)await db.InsertAsync(user, selectIdentity: true);
             if (user.id > 0)
             {
                 var user_role = new User_Role
@@ -91,10 +91,10 @@ namespace Bll.Services.Impliment
             if (id <= 0) { return null!; }
             return await db.SingleByIdAsync<User>(id);
         }
-        public async Task<User> Check_Login(string email, string password)
+        public User Check_Login(string email, string password)
         {
             using var db = _connectionData.OpenDbConnection();
-            var query = await db.SingleAsync<User>(e => e.email == email && e.password == MD5Services.ComputeMd5Hash(password) && e.status == "active");
+            var query = db.Single<User>(e => e.email == email && e.password == MD5Services.ComputeMd5Hash(password) && e.status == "active");
             if (query == null) { return null!; }
             return query;
         }
@@ -109,47 +109,43 @@ namespace Bll.Services.Impliment
             var rows = await db.SelectAsync(query);
             return rows;
         }
-        public async Task<List<string>> GetRolesUser(int user_id)
+        public List<string> GetRolesUser(int user_id)
         {
             using var db = _connectionData.OpenDbConnection();
-            var roles = await db.SelectAsync<User_Role>(ur => ur.user_id == user_id);
+            var roles = db.Select<User_Role>(ur => ur.user_id == user_id).ToList();
             if (roles != null)
             {
                 var roleIds = roles.Select(ur => ur.role_id).ToList();
-                var roleTitles = await db.SelectAsync<Role>(r => roleIds.Contains(r.id));
+                var roleTitles = db.Select<Role>(r => roleIds.Contains(r.id));
                 return roleTitles.Select(r => r.title).ToList();
             }
             return [];
         }
 
 
-        public async Task<(User user, string tokenString)> Valid_Login(string username, string password)
+        public User Valid_Login(string username, string password, out string tokenString)
         {
-            string tokenString = string.Empty;
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
-            {
-                return (null!, tokenString);
-            }
-
-            var user = await Check_Login(username, password);
+            tokenString = string.Empty;
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password)) { return null!; }
+            var user = Check_Login(username, password);
             if (user != null)
             {
-                var roles = await GetRolesUser(user.id);
+                var roles =  GetRolesUser(user.id);
                 if (roles != null && roles.Count > 0)
                 {
-                    List<Claim> claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.id.ToString()),
-                new Claim(ClaimTypes.Name, user.email)
-            };
+                    List<Claim> claims =
+                    [
+                        new(ClaimTypes.NameIdentifier, user.id.ToString()),
+                        new(ClaimTypes.Name, user.email)
+                    ];
 
                     foreach (var role in roles)
                     {
                         claims.Add(new Claim(ClaimTypes.Role, role));
                     }
 
+                    claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
                     var userIdentity = new ClaimsIdentity(claims, "login");
-
                     // Create token
                     var tokenHandler = new JwtSecurityTokenHandler();
                     string jwt_key = GetAppSetting("Jwt:Key")!;
@@ -157,7 +153,6 @@ namespace Bll.Services.Impliment
                     string jwt_audience = GetAppSetting("Jwt:Audience")!;
                     var jwt_expires = Convert.ToInt32(GetAppSetting("Jwt:Expires")!);
                     var key_bytes = Encoding.UTF8.GetBytes(jwt_key);
-
                     var tokenDescriptor = new SecurityTokenDescriptor
                     {
                         Subject = userIdentity,
@@ -180,8 +175,8 @@ namespace Bll.Services.Impliment
                         ValidAudience = jwt_audience,
                         IssuerSigningKey = new SymmetricSecurityKey(key_bytes)
                     };
-
-                    ClaimsPrincipal claimsPrincipal = tokenHandler.ValidateToken(tokenString, tokenValidationParameters, out SecurityToken validatedToken);
+                    ClaimsPrincipal claimsPrincipal;
+                    claimsPrincipal = tokenHandler.ValidateToken(tokenString, tokenValidationParameters, out SecurityToken validatedToken);
 
                     // Save user_id to Session
                     _httpContextAccessor.HttpContext!.Session.SetInt32("user_id", user.id);
@@ -197,7 +192,7 @@ namespace Bll.Services.Impliment
                     });
                 }
             }
-            return (user!, tokenString);
+            return user!;
         }
 
         public bool Logout()

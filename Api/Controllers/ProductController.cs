@@ -15,7 +15,7 @@ namespace Api.Controllers
         {
             _productServices = productServices;
         }
-        [HttpPost("/User/List")]
+        [HttpPost("/Product/List")]
         public async Task<ActionResult> List()
         {
             var draw = Request.Form["draw"];
