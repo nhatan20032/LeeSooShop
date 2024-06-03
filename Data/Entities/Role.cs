@@ -1,5 +1,8 @@
-﻿namespace Data.Entities
+﻿using ServiceStack.DataAnnotations;
+
+namespace Data.Entities
 {
+    [Alias("role")]
     public class Role
     {
         public int id { get; set; }
