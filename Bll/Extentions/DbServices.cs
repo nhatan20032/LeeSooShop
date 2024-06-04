@@ -4,7 +4,7 @@ namespace Bll.Extentions
 {
     public class DbServices
     {
-        private const string ConnectionString = "Server=127.0.0.1;Database=leesooshop;User ID=root;Password=123456;SslMode=none;";
+        private const string ConnectionString = "Server=localhost;Database=leesooshop;User ID=root;Password=123456;SslMode=none;";
 
         private static readonly Lazy<OrmLiteConnectionFactory> _lazyConnectionData = new(() =>
         {

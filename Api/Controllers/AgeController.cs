@@ -39,37 +39,37 @@ namespace Api.Controllers
             });
         }
         [HttpPost("/Age/Create")]
-        public ActionResult Create([FromBody] Age age)
+        public async Task<ActionResult> Create([FromBody] Age age)
         {
             if (age == null) { return NoContent(); }
-            return Ok(_services.Create(age));
+            return Ok(await _services.Create(age));
         }
         [HttpPut("/Age/Update")]
-        public ActionResult Update([FromBody] Age age)
+        public async Task<ActionResult> Update([FromBody] Age age)
         {
             if (age == null) { return NoContent(); }
-            return Ok(_services.Update(age));
+            return Ok(await _services.Update(age));
         }
         [HttpDelete("/Age/Delete/{id}")]
-        public ActionResult Delete([FromRoute] int id)
+        public async Task<ActionResult> Delete([FromRoute] int id)
         {
             if (id <= 0) { return NoContent(); }
-            return Ok(_services.Delete(id));
+            return Ok(await _services.Delete(id));
         }
         [HttpGet]
         [Route("/Age/Get_All")]
-        public ActionResult GetAll(int offset = 0, int limit = 10, string search = "")
+        public async Task<ActionResult> GetAll(int offset = 0, int limit = 10, string search = "")
         {
             PagingModels page = new() { limit = limit, offset = offset, keyword = search };
-            var data = _services.GetAll(page);
+            var data = await _services.GetAll(page);
             return Ok(data);
         }
 
         [HttpGet("/Age/GetById/{id}")]
-        public ActionResult GetById([FromRoute] int id)
+        public async Task<ActionResult> GetById([FromRoute] int id)
         {
             if (id <= 0) { return NoContent(); }
-            return Ok(_services.GetById(id));
+            return Ok(await _services.GetById(id));
         }
     }
 }

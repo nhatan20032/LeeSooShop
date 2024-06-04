@@ -39,37 +39,37 @@ namespace Api.Controllers
             });
         }
         [HttpPost("/Brand/Create")]
-        public ActionResult Create([FromBody] Brand brand)
+        public async Task<ActionResult> Create([FromBody] Brand brand)
         {
             if (brand == null) { return NoContent(); }
-            return Ok(_services.Create(brand));
+            return Ok(await _services.Create(brand));
         }
         [HttpPut("/Brand/Update")]
-        public ActionResult Update([FromBody] Brand brand)
+        public async Task<ActionResult> Update([FromBody] Brand brand)
         {
             if (brand == null) { return NoContent(); }
-            return Ok(_services.Update(brand));
+            return Ok(await _services.Update(brand));
         }
         [HttpDelete("/Brand/Delete/{id}")]
-        public ActionResult Delete([FromRoute] int id)
+        public async Task<ActionResult> Delete([FromRoute] int id)
         {
             if (id <= 0) { return NoContent(); }
-            return Ok(_services.Delete(id));
+            return Ok(await _services.Delete(id));
         }
         [HttpGet]
         [Route("/Brand/Get_All")]
-        public ActionResult GetAll(int offset = 0, int limit = 10, string search = "")
+        public async Task<ActionResult> GetAll(int offset = 0, int limit = 10, string search = "")
         {
             PagingModels pBrand = new() { limit = limit, offset = offset, keyword = search };
-            var data = _services.GetAll(pBrand);
+            var data = await _services.GetAll(pBrand);
             return Ok(data);
         }
 
         [HttpGet("/Brand/GetById/{id}")]
-        public ActionResult GetById([FromRoute] int id)
+        public async Task<ActionResult> GetById([FromRoute] int id)
         {
             if (id <= 0) { return NoContent(); }
-            return Ok(_services.GetById(id));
+            return Ok(await _services.GetById(id));
         }
     }
 }

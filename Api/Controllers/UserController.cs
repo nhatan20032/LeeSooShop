@@ -42,15 +42,15 @@ namespace Api.Controllers
         }
         [AllowAnonymous]
         [HttpPost("/User/Register")]
-        public ActionResult Register([FromBody] User user)
+        public async Task<ActionResult> Register([FromBody] User user)
         {
             if (user == null) { return NoContent(); }
-            return Ok(_services.Register(user));
+            return Ok(await _services.Register(user));
         }
         [AllowAnonymous]
         [HttpPost]
         [Route("/User/Login")]
-        public IActionResult Login([FromBody] UserLogin user)
+        public ActionResult Login([FromBody] UserLogin user)
         {
             if (!ModelState.IsValid) { return BadRequest("Lỗi dữ liệu, xin vui lòng kiểm tra"); }
             var user_login = _services.Valid_Login(user.email, user.password, out string token);
@@ -60,7 +60,7 @@ namespace Api.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("/User/Logout")]
-        public IActionResult Logout()
+        public ActionResult Logout()
         {
             var check_logout = _services.Logout();
             if (!check_logout) { return BadRequest(); }

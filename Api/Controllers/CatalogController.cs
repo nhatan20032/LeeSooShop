@@ -39,37 +39,37 @@ namespace Api.Controllers
             });
         }
         [HttpPost("/Catalog/Create")]
-        public ActionResult Create([FromBody] Catalog catalog)
+        public async Task<ActionResult> Create([FromBody] Catalog catalog)
         {
             if (catalog == null) { return NoContent(); }
-            return Ok(_services.Create(catalog));
+            return Ok(await _services.Create(catalog));
         }
         [HttpPut("/Catalog/Update")]
-        public ActionResult Update([FromBody] Catalog catalog)
+        public async Task<ActionResult> Update([FromBody] Catalog catalog)
         {
             if (catalog == null) { return NoContent(); }
-            return Ok(_services.Update(catalog));
+            return Ok(await _services.Update(catalog));
         }
         [HttpDelete("/Catalog/Delete/{id}")]
-        public ActionResult Delete([FromRoute] int id)
+        public async Task<ActionResult> Delete([FromRoute] int id)
         {
             if (id <= 0) { return NoContent(); }
-            return Ok(_services.Delete(id));
+            return Ok(await _services.Delete(id));
         }
         [HttpGet]
         [Route("/Catalog/Get_All")]
-        public ActionResult GetAll(int offset = 0, int limit = 10, string search = "")
+        public async Task<ActionResult> GetAll(int offset = 0, int limit = 10, string search = "")
         {
             PagingModels pCatalog = new() { limit = limit, offset = offset, keyword = search };
-            var data = _services.GetAll(pCatalog);
+            var data = await _services.GetAll(pCatalog);
             return Ok(data);
         }
 
         [HttpGet("/Catalog/GetById/{id}")]
-        public ActionResult GetById([FromRoute] int id)
+        public async Task<ActionResult> GetById([FromRoute] int id)
         {
             if (id <= 0) { return NoContent(); }
-            return Ok(_services.GetById(id));
+            return Ok(await _services.GetById(id));
         }
     }
 }

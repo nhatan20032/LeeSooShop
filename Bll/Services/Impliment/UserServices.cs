@@ -29,6 +29,8 @@ namespace Bll.Services.Impliment
         public async Task<bool> Register(User user)
         {
             using var db = _connectionData.OpenDbConnection();
+            var check_exist = await db.SingleAsync<User>(u => u.email == user.email || u.phone == user.phone);
+            if (check_exist != null) { return false; }
             user.password = MD5Services.ComputeMd5Hash(user.password);
             user.id = (int)await db.InsertAsync(user, selectIdentity: true);
             if (user.id > 0)
@@ -49,7 +51,6 @@ namespace Bll.Services.Impliment
             if (update == null) { return false; }
             update.last_name = user.last_name;
             update.family_name = user.family_name;
-            update.phone = user.phone;
             update.gender = user.gender;
             update.password = user.password.Length == 32 ? update.password : MD5Services.ComputeMd5Hash(user.password).ToLower();
             update.status = user.status;
@@ -91,11 +92,11 @@ namespace Bll.Services.Impliment
             if (id <= 0) { return null!; }
             return await db.SingleByIdAsync<User>(id);
         }
-        public User Check_Login(string email, string password)
+        public User Check_Login(string email_phone, string password)
 
         {
             using var db = _connectionData.OpenDbConnection();
-            var query = db.Single<User>(e => e.email == email && e.password == MD5Services.ComputeMd5Hash(password) && e.status == "active");
+            var query = db.Single<User>(e => (e.email == email_phone || e.phone == email_phone) && e.password == MD5Services.ComputeMd5Hash(password) && e.status == "active");
             if (query == null) { return null!; }
             return query;
         }
