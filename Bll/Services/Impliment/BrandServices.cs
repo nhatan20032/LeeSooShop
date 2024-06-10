@@ -22,7 +22,7 @@ namespace Bll.Services.Impliment
         {
             using var db = _connectionData.OpenDbConnection();
             if (id <= 0) { return false; }
-            return await db.DeleteByIdAsync<Age>(id) > 0 ? true : false;
+            return await db.DeleteByIdAsync<Brand>(id) > 0 ? true : false;
         }
 
         public async Task<bool> Update(Brand brand)
@@ -33,14 +33,14 @@ namespace Bll.Services.Impliment
             await db.UpdateAsync(brand);
             return true;
         }
-        public Task<List<Brand>> GetAll(PagingModels page)
+        public  async Task<List<Brand>> GetAll(PagingModels page)
         {
             using var db = _connectionData.OpenDbConnection();
             var query = db.From<Brand>();
             query.OrderByDescending(x => x.id);
             if (page.limit > 0) { query.Take(page.limit); }
             if (page.offset > 0) { query.Skip(page.offset); }
-            var rows = db.SelectAsync(query);
+            var rows = await db.SelectAsync(query);
             return rows;
         }
 
