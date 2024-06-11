@@ -38,7 +38,7 @@ namespace Bll.Services.Impliment
 			if (!string.IsNullOrEmpty(page.keyword)) { predicate = predicate.And(e => e.catalog_title!.ToLower().Contains(page.keyword.ToLower()) || e.parent_title!.ToLower().Contains(page.keyword.ToLower())); }
 			var query = db.From<v_Catalog>().Where(predicate);
 			var totalRecords = await db.CountAsync(predicate);
-			query.OrderByDescending(x => x.id);
+			query.OrderBy(x => x.id);
 			if (page.limit > 0) { query.Take(page.limit); }
 			if (page.offset > 0) { query.Skip(page.offset); }
 			var data = await db.SelectAsync(query);
