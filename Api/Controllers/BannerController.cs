@@ -23,18 +23,17 @@ namespace Api.Controllers
 			var start = Request.Form["start"];
 			var length = Request.Form["length"];
 			string? search = Request.Form["search[value]"];
-			var pBanner = new PagingModels
+			var Banner = new PagingModels
 			{
 				limit = int.Parse(length!),
 				offset = int.Parse(start!),
 				keyword = search,
 			};
-			var result = await _services.List(pBanner);
+			var result = await _services.List(Banner);
 			return Ok(new
 			{
 				draw,
 				result.recordsTotal,
-				result.recordsFiltered,
 				result.data
 			});
 		}

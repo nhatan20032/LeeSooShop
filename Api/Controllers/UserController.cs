@@ -36,7 +36,7 @@ namespace Api.Controllers
             {
                 draw,
                 result.recordsTotal,
-                result.recordsFiltered,
+
                 result.data
             });
         }

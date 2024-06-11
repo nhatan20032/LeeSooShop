@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     [ApiController]
     public class CatalogController : ControllerBase
     {
@@ -34,7 +34,6 @@ namespace Api.Controllers
             {
                 draw,
                 result.recordsTotal,
-                result.recordsFiltered,
                 result.data
             });
         }
@@ -60,8 +59,8 @@ namespace Api.Controllers
         [Route("/Catalog/Get_All")]
         public async Task<ActionResult> GetAll(int offset = 0, int limit = 10, string search = "")
         {
-            PagingModels pCatalog = new() { limit = limit, offset = offset, keyword = search };
-            var data = await _services.GetAll(pCatalog);
+            PagingModels Catalog = new() { limit = limit, offset = offset, keyword = search };
+            var data = await _services.GetAll(Catalog);
             return Ok(data);
         }
 

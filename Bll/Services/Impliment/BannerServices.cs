@@ -68,7 +68,7 @@ namespace Bll.Services.Impliment
 			return new DataTableResult
 			{
 				recordsTotal = (int)totalRecords,
-				recordsFiltered = (int)totalRecords,
+				
 				data = data
 			};
 		}
