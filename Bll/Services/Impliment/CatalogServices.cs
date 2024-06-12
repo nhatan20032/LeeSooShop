@@ -39,7 +39,7 @@ namespace Bll.Services.Impliment
 			var query = db.From<v_Catalog>().Where(predicate);
 			var totalRecords = await db.CountAsync(predicate);
 			query.OrderBy(x => x.id);
-			if (page.limit > 0) { query.Take(page.limit); }
+			if (page.limit >= 0) { query.Take(page.limit); }
 			if (page.offset > 0) { query.Skip(page.offset); }
 			var data = await db.SelectAsync(query);
 			return new DataTableResult
