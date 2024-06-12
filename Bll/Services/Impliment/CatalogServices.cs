@@ -3,7 +3,6 @@ using Bll.Services.Interface;
 using Data.Entities;
 using Data.Models;
 using ServiceStack.OrmLite;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Bll.Services.Impliment
 {
@@ -49,31 +48,27 @@ namespace Bll.Services.Impliment
 			}; ;
 		}
 
+		public async Task<DataTableResult> GetAllParentCatalog()
+		{
+			using var db = _connectionData.OpenDbConnection();
+			var predicate = PredicateBuilder.True<v_Catalog>();
+			predicate = predicate.And(e => e.parent_id == 0);
+			var query = db.From<v_Catalog>().Where(predicate);
+			var totalRecords = await db.CountAsync(predicate);
+			query.OrderBy(x => x.id);
+			var data = await db.SelectAsync(query);
+			return new DataTableResult
+			{
+				recordsTotal = (int)totalRecords,
+				data = data
+			}; ;
+		}
+
 		public async Task<Catalog> GetById(int id)
 		{
 			using var db = _connectionData.OpenDbConnection();
 			if (id <= 0) { return null!; }
 			return await db.SingleByIdAsync<Catalog>(id);
-		}
-
-		public async Task<DataTableResult> List(PagingModels page)
-		{
-			using var db = _connectionData.OpenDbConnection();
-			var query = db.From<Catalog>();
-			var predicate = PredicateBuilder.True<Catalog>();
-			if (!string.IsNullOrEmpty(page.keyword))
-			{
-				predicate = predicate.And(e => e.title.ToLower().Contains(page.keyword.ToLower()));
-			}
-			var totalRecords = await db.CountAsync(predicate);
-			if (page.limit > 0) { query.Take(page.limit); }
-			if (page.offset > 0) { query.Skip(page.offset); }
-			var data = await db.SelectAsync(query);
-			return new DataTableResult
-			{
-				recordsTotal = (int)totalRecords,				
-				data = data
-			};
 		}
 	}
 }

@@ -16,27 +16,6 @@ namespace Api.Controllers
         {
             _services = services;
         }
-        [HttpPost("/Catalog/List")]
-        public async Task<ActionResult> List()
-        {
-            var draw = Request.Form["draw"];
-            var start = Request.Form["start"];
-            var length = Request.Form["length"];
-            string? search = Request.Form["search[value]"];
-            var Catalog = new PagingModels
-            {
-                limit = int.Parse(length!),
-                offset = int.Parse(start!),
-                keyword = search,
-            };
-            var result = await _services.List(Catalog);
-            return Ok(new
-            {
-                draw,
-                result.recordsTotal,
-                result.data
-            });
-        }
         [HttpPost("/Catalog/Create")]
         public async Task<ActionResult> Create([FromBody] Catalog catalog)
         {
@@ -59,12 +38,20 @@ namespace Api.Controllers
         [Route("/Catalog/Get_All")]
         public async Task<ActionResult> GetAll(int offset = 0, int limit = 10, string search = "")
         {
-            PagingModels Catalog = new() { limit = limit, offset = offset, keyword = search };
-            var data = await _services.GetAll(Catalog);
+            PagingModels page = new() { limit = limit, offset = offset, keyword = search };
+            var data = await _services.GetAll(page);
             return Ok(data);
         }
 
-        [HttpGet("/Catalog/GetById/{id}")]
+		[HttpGet]
+		[Route("/Catalog/Get_All_Parent_Catalog")]
+		public async Task<ActionResult> Get_All_Parent_Catalog()
+		{
+			var data = await _services.GetAllParentCatalog();
+			return Ok(data);
+		}
+
+		[HttpGet("/Catalog/GetById/{id}")]
         public async Task<ActionResult> GetById([FromRoute] int id)
         {
             if (id <= 0) { return NoContent(); }

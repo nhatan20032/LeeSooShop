@@ -9,7 +9,7 @@ namespace Bll.Services.Interface
         public Task<bool> Update(Catalog catalog);
         public Task<bool> Delete(int id);
         public Task<DataTableResult> GetAll(PagingModels page);
-        public Task<DataTableResult> List(PagingModels page);
-        public Task<Catalog> GetById(int id);
+        public Task<DataTableResult> GetAllParentCatalog();
+		public Task<Catalog> GetById(int id);
     }
 }
