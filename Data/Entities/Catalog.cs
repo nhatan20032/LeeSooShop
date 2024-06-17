@@ -6,7 +6,7 @@ namespace Data.Entities
     public class Catalog
     {
         public int id { get; set; }
-        public int parent_id { get; set; }
+		public int parent_id { get; set; } = 0;
         public required string title { get; set; }
         public string? description { get; set; }
     }

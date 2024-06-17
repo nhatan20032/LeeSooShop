@@ -8,8 +8,7 @@ namespace Bll.Services.Interface
         public Task<bool> Create(Brand brand);
         public Task<bool> Update(Brand brand);
         public Task<bool> Delete(int id);
-        public Task<List<Brand>> GetAll(PagingModels page);
-        public Task<DataTableResult> List(PagingModels page);
+        public Task<DataTableResult> GetAll(PagingModels page);
         public Task<Brand> GetById(int id);
     }
 }
