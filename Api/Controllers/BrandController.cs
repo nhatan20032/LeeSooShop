@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     [ApiController]
     public class BrandController : ControllerBase
     {
@@ -15,28 +15,6 @@ namespace Api.Controllers
         public BrandController(IBrandServices services)
         {
             _services = services;
-        }
-        [HttpPost("/Brand/List")]
-        public async Task<ActionResult> List()
-        {
-            var draw = Request.Form["draw"];
-            var start = Request.Form["start"];
-            var length = Request.Form["length"];
-            string? search = Request.Form["search[value]"];
-            var pBrand = new PagingModels
-            {
-                limit = int.Parse(length!),
-                offset = int.Parse(start!),
-                keyword = search,
-            };
-            var result = await _services.List(pBrand);
-            return Ok(new
-            {
-                draw,
-                result.recordsTotal,
-
-                result.data
-            });
         }
         [HttpPost("/Brand/Create")]
         public async Task<ActionResult> Create([FromBody] Brand brand)
