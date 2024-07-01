@@ -13,6 +13,19 @@ builder.Services.AddCors();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSession();
 builder.Services.AddDistributedMemoryCache();
+// Cấu hình Quartz để thực hiện công việc định kỳ
+//builder.Services.AddQuartz(q =>
+//{
+//    var jobKey_vip = new JobKey("VipExpiredJob");
+//    var jobKey_banner = new JobKey("BannerExpiredJob");
+//    q.AddJob<VipExpiredJob>(opts => opts.WithIdentity(jobKey_vip));
+//    q.AddJob<BannerExpiredJob>(opts => opts.WithIdentity(jobKey_banner));
+
+//    q.AddTrigger(opts => opts.ForJob(jobKey_vip).WithIdentity("VipExpiredJob-trigger").WithSimpleSchedule(x => x.WithIntervalInMinutes(10).RepeatForever()));
+
+//    q.AddTrigger(opts => opts.ForJob(jobKey_banner).WithIdentity("BannerExpiredJob-trigger").WithSimpleSchedule(x => x.WithIntervalInMinutes(10).RepeatForever()));
+//});
+//builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 builder.Services.AddSwaggerGen(option =>
 {
     option.SwaggerDoc("v1", new OpenApiInfo
